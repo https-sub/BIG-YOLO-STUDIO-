@@ -1,103 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BIG YOLO | Pro Designer</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
     <link rel="manifest" href="manifest.json">
     <script>
       if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('sw.js');
+        navigator.serviceWorker.register('sw.js').catch(err => console.log(err));
       }
     </script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BIG YOLO | Industrial Engine</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
+
     <style>
-        body { margin: 0; background: #050505; color: #fff; overflow: hidden; font-family: 'Courier New', Courier, monospace; }
-        #viewport { width: 100vw; height: 60vh; }
-        .ui-panel { height: 40vh; background: #0c0c0c; border-top: 2px solid #222; padding: 20px; }
-        .stitch-active { color: #fbbf24; text-shadow: 0 0 10px #fbbf24; }
-        input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
-        input[type="color"]::-webkit-color-swatch { border: none; border-radius: 5px; }
+        body { margin: 0; background: #000; color: #fff; overflow: hidden; font-family: 'Courier New', monospace; }
+        #viewport { width: 100vw; height: 60vh; background: radial-gradient(circle, #1a1a1a 0%, #000 100%); }
+        .ui-shelf { height: 40vh; background: #0c0c0c; border-top: 2px solid #fbbf24; padding: 15px; display: flex; flex-col; gap: 10px; }
+        .stitch-active { color: #fbbf24; text-shadow: 0 0 8px #fbbf24; font-weight: bold; }
+        .btn-action { background: #1a1a1a; border: 1px solid #333; padding: 10px; border-radius: 8px; font-size: 10px; text-transform: uppercase; font-weight: 900; transition: 0.2s; }
+        .btn-action:active { background: #fbbf24; color: #000; border-color: #fbbf24; }
     </style>
 </head>
 <body class="flex flex-col h-screen">
 
     <div id="viewport"></div>
 
-    <div class="ui-panel flex flex-col gap-4">
-        <div class="flex justify-between items-end border-b border-white/5 pb-2">
+    <div class="ui-shelf flex flex-col">
+        <div class="flex justify-between items-center border-b border-white/5 pb-2 mb-2">
             <div>
                 <h1 class="text-amber-500 font-black italic text-lg leading-none">BIG YOLO</h1>
-                <p class="text-[8px] text-zinc-500 tracking-[0.3em] font-bold">INDUSTRIAL SEWING ENGINE</p>
+                <p class="text-[8px] text-zinc-500 tracking-[0.2em]">TECHNICAL DESIGN ENGINE</p>
             </div>
-            <div class="flex gap-4">
-                <div class="flex flex-col items-center">
-                    <span class="text-[8px] mb-1">THREAD</span>
-                    <input type="color" id="threadColor" value="#fbbf24" class="w-10 h-6 bg-transparent">
-                </div>
-                <button onclick="location.reload()" class="bg-zinc-900 border border-white/10 px-4 py-2 rounded text-[10px] uppercase font-bold">Flush Memory</button>
+            <div class="flex items-center gap-3">
+                <input type="color" id="threadColor" value="#fbbf24" class="w-8 h-8 rounded border-none bg-transparent">
+                <button onclick="location.reload()" class="btn-action">Reset</button>
             </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-4 flex-1 overflow-hidden">
-            <div class="space-y-3">
-                <p class="text-[9px] text-zinc-500 font-black">STITCH TYPE</p>
-                <div class="flex flex-col gap-2">
-                    <button onclick="setStitchType('solid')" class="text-left text-[10px] p-2 bg-zinc-900 rounded border border-white/5 hover:border-amber-500 transition">SOLID (Top Stitch)</button>
-                    <button onclick="setStitchType('dashed')" class="text-left text-[10px] p-2 bg-zinc-900 rounded border border-white/5 hover:border-amber-500 transition">DASHED (Overlock)</button>
-                </div>
+        <div class="grid grid-cols-2 gap-3 flex-1 overflow-hidden">
+            <div class="flex flex-col gap-2">
+                <p class="text-[9px] text-zinc-600 font-bold uppercase">Stitch Style</p>
+                <button onclick="setStitch('dashed')" class="btn-action text-left">Dashed (Industrial)</button>
+                <button onclick="setStitch('solid')" class="btn-action text-left">Solid (Topstitch)</button>
+                <button onclick="toggleWireframe()" class="btn-action text-left">Toggle Technical View</button>
             </div>
 
-            <div class="bg-black/80 rounded-xl p-3 overflow-y-auto border border-white/5">
-                <p class="text-[9px] text-zinc-600 mb-2">COORD_MAPPING_SYSTEM</p>
-                <div id="nodeList" class="space-y-1 text-[8px] font-mono text-zinc-400">
-                    Waiting for input...
+            <div class="bg-black/50 rounded-xl p-3 overflow-y-auto border border-white/5">
+                <p class="text-[8px] text-zinc-700 mb-2 font-mono">X_Y_Z_COORDINATES</p>
+                <div id="nodeList" class="space-y-1 text-[9px] font-mono text-zinc-400">
+                    Tap garment to stitch...
                 </div>
             </div>
         </div>
 
-        <button onclick="alert('Exporting Tech Pack...')" class="w-full bg-amber-500 text-black py-3 rounded-lg font-black text-xs tracking-widest uppercase mt-2">
-            Generate Production File
+        <button onclick="alert('Exporting BIG YOLO Tech Pack...')" class="w-full bg-amber-500 text-black py-4 rounded-xl font-black text-xs tracking-widest uppercase mt-3">
+            Download Production File
         </button>
     </div>
 
     <script>
+        // --- 1. SETUP ENGINE ---
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / (window.innerHeight * 0.6), 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight * 0.6);
+        renderer.setPixelRatio(window.devicePixelRatio);
         document.getElementById('viewport').appendChild(renderer.domElement);
 
-        // STYLIZED VIEWPORT SETUP
-        scene.add(new THREE.AmbientLight(0xffffff, 0.3));
-        const pLight = new THREE.PointLight(0xffffff, 1.2);
-        pLight.position.set(5, 5, 5);
-        scene.add(pLight);
+        // --- 2. WORLD HELPERS ---
+        const grid = new THREE.GridHelper(10, 20, 0x333333, 0x111111);
+        grid.position.y = -2;
+        scene.add(grid);
 
-        // THE GARMENT BASE (3D Tech-Form)
-        const geometry = new THREE.CapsuleGeometry(1, 2, 4, 32);
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
+        const pointLight = new THREE.PointLight(0xffffff, 1);
+        pointLight.position.set(5, 5, 5);
+        scene.add(pointLight);
+
+        // --- 3. GARMENT TECH-FORM ---
+        const geometry = new THREE.CapsuleGeometry(1.2, 2, 8, 32);
         const material = new THREE.MeshStandardMaterial({ 
-            color: 0x0a0a0a, 
+            color: 0x222222, 
             wireframe: true, 
             transparent: true, 
-            opacity: 0.2 
+            opacity: 0.4 
         });
         const garment = new THREE.Mesh(geometry, material);
         scene.add(garment);
-        camera.position.z = 4.5;
+        camera.position.z = 5;
 
+        // --- 4. STITCHING LOGIC ---
         let stitchPoints = [];
         let lineSegments = [];
-        let stitchMode = 'dashed'; 
+        let mode = 'dashed';
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
 
-        function setStitchType(type) { stitchMode = type; }
+        function setStitch(s) { mode = s; }
+        function toggleWireframe() { garment.material.wireframe = !garment.material.wireframe; }
 
         window.addEventListener('click', (e) => {
             if (e.clientY > window.innerHeight * 0.6) return;
-
+            
             mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
             mouse.y = -(e.clientY / (window.innerHeight * 0.6)) * 2 + 1;
 
@@ -111,54 +119,60 @@
         });
 
         function addStitch(pos) {
-            // Add Node Visual
+            // Visual Point
             const dot = new THREE.Mesh(
-                new THREE.SphereGeometry(0.03, 8, 8),
+                new THREE.SphereGeometry(0.04, 8, 8),
                 new THREE.MeshBasicMaterial({ color: document.getElementById('threadColor').value })
             );
             dot.position.copy(pos);
             scene.add(dot);
-
             stitchPoints.push(pos);
-            
+
+            // Connect Thread
             if (stitchPoints.length > 1) {
                 const prev = stitchPoints[stitchPoints.length - 2];
                 const curr = stitchPoints[stitchPoints.length - 1];
-                
                 const lineGeo = new THREE.BufferGeometry().setFromPoints([prev, curr]);
                 const lineMat = new THREE.LineDashedMaterial({
                     color: document.getElementById('threadColor').value,
-                    dashSize: stitchMode === 'dashed' ? 0.1 : 100,
-                    gapSize: stitchMode === 'dashed' ? 0.05 : 0,
+                    dashSize: mode === 'dashed' ? 0.1 : 100,
+                    gapSize: mode === 'dashed' ? 0.05 : 0,
                     scale: 1
                 });
-                
                 const line = new THREE.Line(lineGeo, lineMat);
-                line.computeLineDistances(); // Required for dashed effect
+                line.computeLineDistances();
                 scene.add(line);
                 lineSegments.push(line);
             }
-            updateLog();
+            updateUI();
         }
 
-        function updateLog() {
+        function updateUI() {
             const list = document.getElementById('nodeList');
             list.innerHTML = stitchPoints.map((p, i) => `
                 <div class="flex justify-between border-b border-white/5 py-1">
-                    <span class="stitch-active">S_${i+1}</span>
-                    <span>X:${p.x.toFixed(2)} Y:${p.y.toFixed(2)} Z:${p.z.toFixed(2)}</span>
+                    <span class="stitch-active">POINT_${i+1}</span>
+                    <span>${p.x.toFixed(2)}, ${p.y.toFixed(2)}, ${p.z.toFixed(2)}</span>
                 </div>
             `).join('');
             list.scrollTop = list.scrollHeight;
         }
 
+        // --- 5. RENDER LOOP ---
         function animate() {
             requestAnimationFrame(animate);
-            garment.rotation.y += 0.003;
+            garment.rotation.y += 0.003; // Smooth spin
             lineSegments.forEach(l => l.rotation.y += 0.003);
             renderer.render(scene, camera);
         }
         animate();
+
+        // Responsive Fix
+        window.onresize = () => {
+            renderer.setSize(window.innerWidth, window.innerHeight * 0.6);
+            camera.aspect = window.innerWidth / (window.innerHeight * 0.6);
+            camera.updateProjectionMatrix();
+        };
     </script>
 </body>
 </html>
